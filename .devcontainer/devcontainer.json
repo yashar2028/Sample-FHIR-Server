@@ -1,0 +1,7 @@
+{
+  "name": "Rust Server Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",  // Using base Linux image.
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {}  // Installs Rust, common Rust utilities, and their required dependencies.
+  }
+}
