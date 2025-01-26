@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # This GitHub Action installs a Rust toolchain using rustup. It is designed for one-line concise usage and good defaults.
+      # It also takes care of caching intermediate build artifacts to reduce build time.
+      - name: Install the Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-version: stable    # Default.
+          profile: minimal        # Default. Reduce the installation size and time by omitting optional components like documentation.
+          override: true
+
+      - name: Build
+        run: cargo build --verbose
+
+      - name: Test
+        run: cargo test --verbose
+
+  # `fmt` container job using cargo fmt to format code.
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-version: stable
+          profile: minimal
+          override: true
+          components: rustfmt
+      - name: Formatting
+        run: cargo fmt --check
+
+  # Using cargo clippy as linter. 
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rust-version: stable
+          profile: minimal
+          override: true
+          components: clippy
+      - name: Linting
+        run: cargo clippy -- -D warnings
+
+      
