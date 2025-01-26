@@ -3,5 +3,9 @@
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",  // Using base Linux image.
   "features": {
     "ghcr.io/devcontainers/features/rust:1": {}  // Installs Rust, common Rust utilities, and their required dependencies.
-  }
+  },
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y docker.io",  // Installs Docker CLI
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"  // Mounts Docker socket for interaction
+  ]
 }
