@@ -5,8 +5,6 @@ use axum::{
     routing::{get, post},
     Router,
 };
-// use fhirbolt::model::r5::resources::Patient;
-// use fhir_rs::prelude::*;
 use fhir_sdk::r5::resources::{Patient, Practitioner};
 use mongodb::bson::doc;
 use uuid::Uuid;
@@ -40,8 +38,6 @@ pub async fn get_patients(State(state): State<AppState>) -> Json<Vec<Patient>> {
 
     let cursor = patient_collection.find(None).await.unwrap(); // Fetch all the resources (no filter).
     let patients: Vec<Patient> = cursor.try_collect().await.unwrap();
-
-    // let patients: Vec<Patient> = mongo_patients.into_iter().map(|mp| mp.patient).collect(); // Map the MongoPatient (Deserialize it into the patient field of it which is of type Patient from fhirbolt model).
 
     Json(patients)
 }

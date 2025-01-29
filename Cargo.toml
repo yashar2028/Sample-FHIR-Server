@@ -8,6 +8,6 @@ axum = "0.8.1"
 fhir-model = "^0.12.0"
 fhir-sdk = "^0.14.1"
 mongodb = "3.2.0"
-serde = { version = "=1.0.184", features = ["derive"] }
+serde = "=1.0.184"
 tokio = "1.43.0"
 uuid = "1.12.1"

@@ -1,9 +1,7 @@
 use mongodb::{Client, Collection, Database};
-// use fhirbolt::model::r5::resources::{Patient, Practitioner};
-// use fhir_rs::prelude::*;
 use fhir_sdk::r5::resources::{Patient, Practitioner};
 
-pub struct MongoCollections { // This will include all the collections in the database regardless of resource category.
+pub struct MongoCollections {
     pub patient: Collection<Patient>,
     pub practitioner: Collection<Practitioner>
 }
