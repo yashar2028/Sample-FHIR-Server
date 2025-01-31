@@ -3,9 +3,11 @@ use Sample_FHIR_Server::{
     state::AppState,};
 use Sample_FHIR_Server::routes::app_routes;
 use std::sync::Arc;
+use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {
+
     let collections: MongoCollections = init_db().await;
 
     let app_state = AppState {

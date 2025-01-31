@@ -22,7 +22,7 @@ else
     -e MONGO_INITDB_ROOT_PASSWORD=$DB_PASSWORD \
     -e MONGO_INITDB_DATABASE=$DB_NAME \
     -p $DB_PORT:27017 \
-    -d mongo
+    -d mongo:4.4.29
 fi
 
 echo "MongoDB is running on port $DB_PORT."
