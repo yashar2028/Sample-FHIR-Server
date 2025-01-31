@@ -1,5 +1,5 @@
 [package]
-name = "Sample-FHIR-Server"
+name = "sample_fhir_server"
 version = "0.1.0"
 edition = "2021"
 

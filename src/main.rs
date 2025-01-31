@@ -1,7 +1,7 @@
-use Sample_FHIR_Server::{
+use sample_fhir_server::{
     configuration::{MongoCollections, init_db}, 
     state::AppState,};
-use Sample_FHIR_Server::routes::app_routes;
+use sample_fhir_server::routes::app_routes;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 
