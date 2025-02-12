@@ -15,7 +15,7 @@ async fn main() {
         practitioners: Arc::new(collections.practitioner)
     };
 
-    let app = app_routes().with_state(app_state);
+    let app = app_routes().await.with_state(app_state);
     let listener = TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();

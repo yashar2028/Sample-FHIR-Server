@@ -1847,6 +1847,7 @@ dependencies = [
  "fhir-model",
  "fhir-sdk",
  "mongodb",
+ "reqwest",
  "serde",
  "serde_json",
  "tokio",

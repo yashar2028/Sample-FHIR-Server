@@ -4,7 +4,7 @@ use crate::state::AppState;
 
 pub mod individuals;
 
-pub fn app_routes() -> Router<AppState> { // Combine all routes into a single router.
+pub async fn app_routes() -> Router<AppState> { // Combine all routes into a single router.
     Router::new()
         .merge(patient_routes())
 }
