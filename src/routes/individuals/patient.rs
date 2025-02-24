@@ -1,13 +1,14 @@
 use crate::state::{AppState, BsonPatient};
+use axum::http::StatusCode;
 use axum::{
     extract::{Path, State},
-    response::Json,
+    response::{IntoResponse, Json},
     routing::{get, post},
     Router,
 };
+use fhir_sdk::TryStreamExt; // Required trait for .try_collect() method which is a function provided by this trait (See their documentation).
 use mongodb::bson::doc;
 use uuid::Uuid;
-use fhir_sdk::TryStreamExt; // Required trait for .try_collect() method which is a function provided by this trait (See their documentation).
 
 pub fn patient_routes() -> Router<AppState> {
     Router::new()
@@ -18,9 +19,10 @@ pub fn patient_routes() -> Router<AppState> {
 pub async fn create_patient(
     State(state): State<AppState>,
     Json(mut patient): Json<BsonPatient>,
-) -> Json<BsonPatient> {
-    if patient.patient.0.id.is_none() { // New id is generated if the id field is not proided. Check the Patient struct in fhir_sdk documentation to realize the path. BsonPatient.patient.0.id. 0 leads to
-        patient.patient.0.id = Some(Uuid::new_v4().to_string()); // PatientInner struct which is warped by Patient struct (pub struct Patient(pub Box<PatientInner>)) and we take id from there.  
+) -> impl IntoResponse {
+    if patient.patient.0.id.is_none() {
+        // New id is generated if the id field is not proided. Check the Patient struct in fhir_sdk documentation to realize the path. BsonPatient.patient.0.id. 0 leads to
+        patient.patient.0.id = Some(Uuid::new_v4().to_string()); // PatientInner struct which is warped by Patient struct (pub struct Patient(pub Box<PatientInner>)) and we take id from there.
     }
 
     let patient_collection = &state.patients;
@@ -30,7 +32,7 @@ pub async fn create_patient(
         .await
         .unwrap();
 
-    Json(patient)
+    (StatusCode::CREATED, Json(patient))
 }
 
 pub async fn get_patients(State(state): State<AppState>) -> Json<Vec<BsonPatient>> {
