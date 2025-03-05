@@ -46,7 +46,7 @@ async fn test_get_patients() {
     // the server abortion for us.
 }
 
-#[tokio::test] // This test will cover the get patient with id functionality, update and delete. 
+#[tokio::test] // This test will cover the get patient with id functionality, update and delete.
 async fn test_create_update_delete_patient() {
     let test_app_socket = test_app().await;
     let client = reqwest::Client::new();

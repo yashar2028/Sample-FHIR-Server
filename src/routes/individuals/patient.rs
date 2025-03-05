@@ -13,7 +13,12 @@ use uuid::Uuid;
 pub fn patient_routes() -> Router<AppState> {
     Router::new()
         .route("/fhir/Patient", post(create_patient).get(get_patients))
-        .route("/fhir/Patient/{id}", get(get_patient_with_id).put(update_patient).delete(delete_patient))
+        .route(
+            "/fhir/Patient/{id}",
+            get(get_patient_with_id)
+                .put(update_patient)
+                .delete(delete_patient),
+        )
 }
 
 pub async fn create_patient(
@@ -60,7 +65,7 @@ pub async fn update_patient(
     State(state): State<AppState>,
     Path(id): Path<String>,
     Json(updated_patient): Json<BsonPatient>,
-) ->  impl IntoResponse {
+) -> impl IntoResponse {
     let patient_collection = &state.patients;
     let filter = doc! { "id": &id };
 
