@@ -26,6 +26,9 @@ jobs:
       - name: Build
         run: cargo build --verbose
 
+      - name: Test
+        run: cargo test --verbose
+
   # `fmt` container job using cargo fmt to format code.
   fmt:
     name: Rustfmt
