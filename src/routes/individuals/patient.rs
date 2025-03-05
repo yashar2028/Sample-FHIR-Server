@@ -7,13 +7,13 @@ use axum::{
     Router,
 };
 use fhir_sdk::TryStreamExt; // Required trait for .try_collect() method which is a function provided by this trait (See their documentation).
-use mongodb::bson::doc;
+use mongodb::bson::{doc, to_bson};
 use uuid::Uuid;
 
 pub fn patient_routes() -> Router<AppState> {
     Router::new()
         .route("/fhir/Patient", post(create_patient).get(get_patients))
-        .route("/fhir/Patient/{id}", get(get_patient_with_id))
+        .route("/fhir/Patient/{id}", get(get_patient_with_id).put(update_patient).delete(delete_patient))
 }
 
 pub async fn create_patient(
@@ -54,4 +54,34 @@ pub async fn get_patient_with_id(
     let patient = patient_collection.find_one(filter).await.unwrap();
 
     Json(patient)
+}
+
+pub async fn update_patient(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(updated_patient): Json<BsonPatient>,
+) ->  impl IntoResponse {
+    let patient_collection = &state.patients;
+    let filter = doc! { "id": &id };
+
+    let update_doc = doc! { "$set": to_bson(&updated_patient).unwrap() }; // Updating the altered fields without replacing the whole resource (.replace_one()). Here doc macro expects a BSON.
+
+    patient_collection
+        .update_one(filter, update_doc)
+        .await
+        .unwrap();
+
+    (StatusCode::OK, Json(updated_patient))
+}
+
+pub async fn delete_patient(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> impl IntoResponse {
+    let patient_collection = &state.patients;
+    let filter = doc! { "id": &id };
+
+    patient_collection.delete_one(filter).await.unwrap();
+
+    (StatusCode::NO_CONTENT, Json("Patient deleted"))
 }
