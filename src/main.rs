@@ -1,3 +1,4 @@
+use dotenvy::dotenv;
 use sample_fhir_server::routes::app_routes;
 use sample_fhir_server::{
     configuration::{init_db, MongoCollections},
@@ -5,13 +6,11 @@ use sample_fhir_server::{
 };
 use std::sync::Arc;
 use tokio::net::TcpListener;
-use tower_http::trace::{TraceLayer, DefaultMakeSpan};
-use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
-use dotenvy::dotenv;
+use tower_http::trace::{DefaultMakeSpan, TraceLayer};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 #[tokio::main]
 async fn main() {
-
     dotenv().ok(); // Load .env file.
 
     let collections: MongoCollections = init_db().await;
@@ -21,10 +20,9 @@ async fn main() {
         practitioners: Arc::new(collections.practitioner),
     };
 
-    let app = app_routes().await
-        .with_state(app_state)
-        .layer(TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::new().include_headers(true))); // Having header info to also be included in spans.
-
+    let app = app_routes().await.with_state(app_state).layer(
+        TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::new().include_headers(true)),
+    ); // Having header info to also be included in spans.
 
     let tracing_layer_formatter = tracing_subscriber::fmt::layer(); // Basic formatter for logs.
 
@@ -32,7 +30,6 @@ async fn main() {
         .with(tracing_layer_formatter)
         .with(EnvFilter::from_default_env())
         .init();
-
 
     let listener = TcpListener::bind("127.0.0.1:3000").await.unwrap();
     println!("Listening on {}", listener.local_addr().unwrap());

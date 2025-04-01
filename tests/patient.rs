@@ -1,4 +1,5 @@
 use axum::http::StatusCode;
+use dotenvy::dotenv;
 use mongodb::bson::doc;
 use reqwest;
 use sample_fhir_server::configuration::{init_db, MongoCollections};
@@ -7,11 +8,9 @@ use sample_fhir_server::state::AppState;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tokio::net::TcpListener;
-use tower_http::trace::{TraceLayer, DefaultMakeSpan};
-use dotenvy::dotenv;
+use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 
 async fn test_app() -> SocketAddr {
-
     dotenv().ok();
 
     let collections: MongoCollections = init_db().await;
@@ -21,9 +20,9 @@ async fn test_app() -> SocketAddr {
         practitioners: Arc::new(collections.practitioner),
     };
 
-    let app = app_routes().await
-        .with_state(app_state)
-        .layer(TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::new().include_headers(true)));
+    let app = app_routes().await.with_state(app_state).layer(
+        TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::new().include_headers(true)),
+    );
 
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
